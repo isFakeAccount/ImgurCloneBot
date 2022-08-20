@@ -23,6 +23,7 @@ async def download_image(image_url: str, download_path: str):
 @bot.include
 @crescent.command(guild=793952307103662102)
 async def clone_album(ctx: crescent.Context, album_url: str, new_album_title: str):
+    await ctx.defer()
     result = re.match(r'https:\/\/imgur.com\/a\/(\w+)', album_url)
     if not result:
         await ctx.respond("Not a valid Imgur Album URL")
@@ -41,10 +42,12 @@ async def clone_album(ctx: crescent.Context, album_url: str, new_album_title: st
     for file in download_path.iterdir():
         image = client.upload_from_path(str(file), anon=False)
         img_ids.append(image.get('id'))
+        file.unlink()
 
-    album = client.create_album({'title': new_album_title, 'privacy': 'hidden', 'ids': img_ids})
+    album = client.create_album({'title': new_album_title, 'privacy': 'hidden'})
+    client.album_add_images(album.get('id'), img_ids)
+    download_path.rmdir()
     await ctx.respond(f"Album uploaded https://imgur.com/a/{album.get('id')}")
-    download_path.unlink()
 
 
 def main():
