@@ -33,16 +33,15 @@ async def clone_album(ctx: crescent.Context, album_url: str, new_album_title: st
     images = client.get_album_images(album_id)
     download_path = pathlib.Path(f"temp_{time.time()}")
     download_path.mkdir()
+
+    img_ids = []
     for image in images:
         img_url = image.link
         image_path = pathlib.Path(f"{download_path}", img_url.split('/')[-1])
         await download_image(img_url, f"{image_path}")
-
-    img_ids = []
-    for file in download_path.iterdir():
-        image = client.upload_from_path(str(file), anon=False)
+        image = client.upload_from_path(str(image_path), config={'description': image.description}, anon=False)
         img_ids.append(image.get('id'))
-        file.unlink()
+        image_path.unlink()
 
     album = client.create_album({'title': new_album_title, 'privacy': 'hidden'})
     client.album_add_images(album.get('id'), img_ids)
