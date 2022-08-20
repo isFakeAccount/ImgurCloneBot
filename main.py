@@ -29,9 +29,7 @@ async def clone_album(ctx: crescent.Context, album_url: str, new_album_title: st
         return
 
     album_id = result.group(1)
-    await ctx.respond(album_id)
-
-    images = client.get_album_images('Y0BV6KK')
+    images = client.get_album_images(album_id)
     download_path = pathlib.Path(f"temp_{time.time()}")
     download_path.mkdir()
     for image in images:
