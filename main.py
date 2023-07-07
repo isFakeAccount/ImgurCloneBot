@@ -175,7 +175,7 @@ async def clone_album(ctx: crescent.Context, album_url: str, new_album_title: st
 
 
 def main():
-    client.run()
+    bot.run()
 
 
 if __name__ == '__main__':
