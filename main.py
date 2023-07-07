@@ -11,8 +11,8 @@ import hikari
 from dotenv import load_dotenv
 
 load_dotenv('config.env')
-bot = crescent.Bot(getenv('discord_token'))
-
+bot = hikari.GatewayBot(getenv('discord_token'))
+client = crescent.Client(bot)
 
 async def is_video_file(filename):
     video_file_extensions = ('.mp4', '.mpeg', '.avi', '.webm', '.quicktime', '.mkv', '.flv')
@@ -80,7 +80,7 @@ async def create_album_with_images(title: str, img_ids: list[str]) -> str:
             return (await resp.json())['data']['id']
 
 
-@bot.include
+@client.include
 @crescent.command(guild=793952307103662102)
 async def add_image_to_album(ctx: crescent.Context, album_url: str, img: hikari.Attachment, img_description: str):
     await ctx.defer()
@@ -110,7 +110,7 @@ async def add_image_to_album(ctx: crescent.Context, album_url: str, img: hikari.
     await ctx.respond(f"Album updated https://imgur.com/a/{album_id}")
 
 
-@bot.include
+@client.include
 @crescent.event
 async def on_message_create(event: hikari.MessageCreateEvent):
     if event.message.author.is_bot or not event.message.content:
@@ -141,7 +141,7 @@ async def on_message_create(event: hikari.MessageCreateEvent):
         await event.message.respond("This is true. I can confirm. :robot:")
 
 
-@bot.include
+@client.include
 @crescent.command(guild=793952307103662102)
 async def clone_album(ctx: crescent.Context, album_url: str, new_album_title: str):
     await ctx.defer()
@@ -175,7 +175,7 @@ async def clone_album(ctx: crescent.Context, album_url: str, new_album_title: st
 
 
 def main():
-    bot.run()
+    client.run()
 
 
 if __name__ == '__main__':
